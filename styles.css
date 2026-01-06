@@ -609,6 +609,49 @@ body {
   background: rgba(255, 255, 255, 0.10);
 }
 
+.musicGate {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 80;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.62);
+}
+
+.musicGate[aria-hidden="false"] {
+  display: grid;
+}
+
+.musicGate__panel {
+  width: min(560px, calc(100vw - 28px));
+  border: 2px solid var(--pxBorder);
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+  padding: 14px 14px;
+}
+
+.musicGate__title {
+  font-family: "Press Start 2P", ui-monospace, monospace;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.6px;
+  color: #ffd25a;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+.musicGate__text {
+  font-size: 22px;
+  color: rgba(245, 247, 255, 0.88);
+  margin-bottom: 12px;
+}
+
+.musicGate__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 880px) {
   .note--b,
   .note--d {

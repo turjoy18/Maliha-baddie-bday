@@ -273,6 +273,25 @@
       </figure>
     </div>
 
+    <audio
+      id="bgm"
+      preload="auto"
+      loop
+      playsinline
+      aria-label="Background music"
+    ></audio>
+
+    <div class="musicGate" id="musicGate" aria-hidden="true">
+      <div class="musicGate__panel" role="dialog" aria-label="Start music">
+        <div class="musicGate__title">BGM LOCKED</div>
+        <div class="musicGate__text">Press START to play music</div>
+        <div class="musicGate__actions">
+          <button class="btn" id="musicStartBtn" type="button">PRESS START</button>
+          <button class="btn btn--ghost" id="musicNoBtn" type="button">NO MUSIC</button>
+        </div>
+      </div>
+    </div>
+
     <script src="./script.js"></script>
   </body>
 </html>

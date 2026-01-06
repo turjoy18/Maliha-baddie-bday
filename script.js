@@ -1,9 +1,15 @@
 (() => {
   const images = Array.from({ length: 15 }, (_, i) => `img${i + 1}.jpeg`);
+  const MUSIC_FILE = "Shibu - 10 E 10 (Official Visualizer).mp3";
 
   const collageEl = document.getElementById("collage");
   const shuffleBtn = document.getElementById("shuffleBtn");
   const dateBadge = document.getElementById("dateBadge");
+
+  const bgm = document.getElementById("bgm");
+  const musicGate = document.getElementById("musicGate");
+  const musicStartBtn = document.getElementById("musicStartBtn");
+  const musicNoBtn = document.getElementById("musicNoBtn");
 
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = document.getElementById("lightboxImg");
@@ -130,6 +136,38 @@
     if (lightboxImg) lightboxImg.src = "";
   }
 
+  function showMusicGate() {
+    if (!musicGate) return;
+    musicGate.setAttribute("aria-hidden", "false");
+  }
+
+  function hideMusicGate() {
+    if (!musicGate) return;
+    musicGate.setAttribute("aria-hidden", "true");
+  }
+
+  async function tryAutoplayMusic() {
+    if (!(bgm instanceof HTMLAudioElement)) return;
+
+    const disabled = localStorage.getItem("bgm_disabled") === "1";
+    if (disabled) return;
+
+    // Assign src lazily so local dev + Vercel both work, including spaces in filename.
+    bgm.src = encodeURI(`./${MUSIC_FILE}`);
+    bgm.loop = true;
+    bgm.preload = "auto";
+    bgm.volume = 0.75;
+
+    try {
+      await bgm.play();
+      localStorage.setItem("bgm_enabled", "1");
+      hideMusicGate();
+    } catch {
+      // Autoplay is commonly blocked; require a user gesture.
+      showMusicGate();
+    }
+  }
+
   function bind() {
     document.addEventListener("click", (e) => {
       const target = e.target;
@@ -172,6 +210,31 @@
       // Re-render to recompute spans
       render(currentOrder);
     });
+
+    musicStartBtn?.addEventListener("click", async () => {
+      if (!(bgm instanceof HTMLAudioElement)) return;
+      localStorage.removeItem("bgm_disabled");
+      bgm.src = encodeURI(`./${MUSIC_FILE}`);
+      bgm.loop = true;
+      bgm.volume = 0.75;
+      try {
+        await bgm.play();
+        localStorage.setItem("bgm_enabled", "1");
+        hideMusicGate();
+      } catch {
+        // If it still fails, keep the gate open.
+        showMusicGate();
+      }
+    });
+
+    musicNoBtn?.addEventListener("click", () => {
+      localStorage.setItem("bgm_disabled", "1");
+      localStorage.removeItem("bgm_enabled");
+      if (bgm instanceof HTMLAudioElement) {
+        bgm.pause();
+      }
+      hideMusicGate();
+    });
   }
 
   let currentOrder = images.slice();
@@ -181,6 +244,8 @@
     currentOrder = shuffle(images);
     render(currentOrder);
     bind();
+    // Attempt immediately; if blocked, user gets a pixel "PRESS START" prompt.
+    tryAutoplayMusic();
   }
 
   init();
